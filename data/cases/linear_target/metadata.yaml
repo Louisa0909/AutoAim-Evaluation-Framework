@@ -1,0 +1,126 @@
+{
+  "schema_version": "1.0",
+  "dataset": {
+    "name": "linear_target",
+    "source": "generated",
+    "description": "Ideal constant-velocity target"
+  },
+  "units": {
+    "timestamp": "ns",
+    "position": "m",
+    "velocity": "m/s",
+    "angle": "rad",
+    "angular_velocity": "rad/s",
+    "pixel": "px",
+    "bullet_speed": "m/s"
+  },
+  "coordinate_system": {
+    "world": {
+      "x": "forward",
+      "y": "left",
+      "z": "up",
+      "handedness": "right"
+    },
+    "command": {
+      "yaw_positive": "left",
+      "pitch_positive": "down"
+    },
+    "quaternion_order": "wxyz",
+    "quaternion_meaning": "gimbal_to_world",
+    "armor_corner_order": [
+      "left_top",
+      "right_top",
+      "right_bottom",
+      "left_bottom"
+    ]
+  },
+  "camera": {
+    "source_auto_aim_config": "../2026_EGAIM/configs/demo.yaml",
+    "image_width": 1440,
+    "image_height": 1080,
+    "camera_matrix": [
+      [
+        1818.3669452465165,
+        0.0,
+        751.062265747035
+      ],
+      [
+        0.0,
+        1822.494494078506,
+        530.4367155611213
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "distortion_coefficients": [
+      -0.07794462659956886,
+      0.1544782603148689,
+      -0.0025714394278524674,
+      0.0008301631130127363,
+      0.0
+    ],
+    "R_gimbal2imubody": [
+      -1.0,
+      0.0,
+      0.0,
+      0.0,
+      -1.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ],
+    "R_camera2gimbal": [
+      -0.008319576004695461,
+      0.010498791137270739,
+      0.9999102759946804,
+      -0.9996075613864775,
+      -0.026835747568381807,
+      -0.008035289131414894,
+      0.026748978935305992,
+      -0.9995847227909708,
+      0.010717933047771133
+    ],
+    "t_camera2gimbal": [
+      0.09496930183353451,
+      0.09500629029800668,
+      0.05098706629175661
+    ]
+  },
+  "armor_geometry": {
+    "small": {
+      "width": 0.135,
+      "height": 0.056
+    },
+    "big": {
+      "width": 0.23,
+      "height": 0.056
+    }
+  },
+  "simulation": {
+    "start_timestamp_ns": 0,
+    "duration_ns": 5000000000,
+    "step_ns": 10000000,
+    "observation_noise": false,
+    "ballistics": {
+      "muzzle_position_source": "2026_EGAIM Aimer/Trajectory implicit gimbal origin",
+      "muzzle_position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "gravity": 9.80665,
+      "drag_coefficient": 0.0,
+      "wind_velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "integration_dt_s": 0.002,
+      "max_flight_time_s": 2.0
+    }
+  }
+}

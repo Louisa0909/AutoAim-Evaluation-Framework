@@ -1,0 +1,68 @@
+[
+{
+  "directory": "/home/xiaoyu/EGA/offline_test/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/home/xiaoyu/EGA/2026_EGAIM -isystem /usr/include/eigen3 -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/armor.cpp.o -c /home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/armor.cpp",
+  "file": "/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/armor.cpp",
+  "output": "CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/armor.cpp.o"
+},
+{
+  "directory": "/home/xiaoyu/EGA/offline_test/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/home/xiaoyu/EGA/2026_EGAIM -isystem /usr/include/eigen3 -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/solver.cpp.o -c /home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/solver.cpp",
+  "file": "/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/solver.cpp",
+  "output": "CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/solver.cpp.o"
+},
+{
+  "directory": "/home/xiaoyu/EGA/offline_test/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/home/xiaoyu/EGA/2026_EGAIM -isystem /usr/include/eigen3 -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/target.cpp.o -c /home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/target.cpp",
+  "file": "/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/target.cpp",
+  "output": "CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/target.cpp.o"
+},
+{
+  "directory": "/home/xiaoyu/EGA/offline_test/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/home/xiaoyu/EGA/2026_EGAIM -isystem /usr/include/eigen3 -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/tracker.cpp.o -c /home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/tracker.cpp",
+  "file": "/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/tracker.cpp",
+  "output": "CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/tracker.cpp.o"
+},
+{
+  "directory": "/home/xiaoyu/EGA/offline_test/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/home/xiaoyu/EGA/2026_EGAIM -isystem /usr/include/eigen3 -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/aimer.cpp.o -c /home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/aimer.cpp",
+  "file": "/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/aimer.cpp",
+  "output": "CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/aimer.cpp.o"
+},
+{
+  "directory": "/home/xiaoyu/EGA/offline_test/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/home/xiaoyu/EGA/2026_EGAIM -isystem /usr/include/eigen3 -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/shooter.cpp.o -c /home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/shooter.cpp",
+  "file": "/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/shooter.cpp",
+  "output": "CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tasks/auto_aim/shooter.cpp.o"
+},
+{
+  "directory": "/home/xiaoyu/EGA/offline_test/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/home/xiaoyu/EGA/2026_EGAIM -isystem /usr/include/eigen3 -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tools/extended_kalman_filter.cpp.o -c /home/xiaoyu/EGA/2026_EGAIM/tools/extended_kalman_filter.cpp",
+  "file": "/home/xiaoyu/EGA/2026_EGAIM/tools/extended_kalman_filter.cpp",
+  "output": "CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tools/extended_kalman_filter.cpp.o"
+},
+{
+  "directory": "/home/xiaoyu/EGA/offline_test/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/home/xiaoyu/EGA/2026_EGAIM -isystem /usr/include/eigen3 -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tools/math_tools.cpp.o -c /home/xiaoyu/EGA/2026_EGAIM/tools/math_tools.cpp",
+  "file": "/home/xiaoyu/EGA/2026_EGAIM/tools/math_tools.cpp",
+  "output": "CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tools/math_tools.cpp.o"
+},
+{
+  "directory": "/home/xiaoyu/EGA/offline_test/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/home/xiaoyu/EGA/2026_EGAIM -isystem /usr/include/eigen3 -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tools/trajectory.cpp.o -c /home/xiaoyu/EGA/2026_EGAIM/tools/trajectory.cpp",
+  "file": "/home/xiaoyu/EGA/2026_EGAIM/tools/trajectory.cpp",
+  "output": "CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tools/trajectory.cpp.o"
+},
+{
+  "directory": "/home/xiaoyu/EGA/offline_test/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/home/xiaoyu/EGA/2026_EGAIM -isystem /usr/include/eigen3 -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tools/logger.cpp.o -c /home/xiaoyu/EGA/2026_EGAIM/tools/logger.cpp",
+  "file": "/home/xiaoyu/EGA/2026_EGAIM/tools/logger.cpp",
+  "output": "CMakeFiles/offline_auto_aim_core.dir/home/xiaoyu/EGA/2026_EGAIM/tools/logger.cpp.o"
+},
+{
+  "directory": "/home/xiaoyu/EGA/offline_test/build",
+  "command": "/usr/bin/c++ -DFMT_SHARED -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -I/home/xiaoyu/EGA/2026_EGAIM -isystem /usr/include/eigen3 -isystem /usr/include/opencv4 -O3 -DNDEBUG -std=gnu++17 -o CMakeFiles/auto_aim_offline.dir/apps/auto_aim_offline.cpp.o -c /home/xiaoyu/EGA/offline_test/apps/auto_aim_offline.cpp",
+  "file": "/home/xiaoyu/EGA/offline_test/apps/auto_aim_offline.cpp",
+  "output": "CMakeFiles/auto_aim_offline.dir/apps/auto_aim_offline.cpp.o"
+}
+]

@@ -1,0 +1,24 @@
+{
+  "name": "linear_target",
+  "description": "Ideal constant-velocity target",
+  "duration_s": 5.0,
+  "dt_s": 0.01,
+  "bullet_speed": 27.0,
+  "target": {
+    "target_id": 1,
+    "initial_position": [5.0, -0.8, 0.5],
+    "velocity": [0.0, 0.32, 0.0],
+    "initial_yaw": 0.0,
+    "yaw_rate": 0.0,
+    "radius": 0.2,
+    "radius_delta": 0.0,
+    "height_delta": 0.0,
+    "armor_count": 4,
+    "armor_type": "small",
+    "name": "two",
+    "color": "blue",
+    "class_id": 6
+  },
+  "observation": {"pixel_noise_std": 0.0, "drop_probability": 0.0, "confidence": 1.0}
+}
+

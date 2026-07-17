@@ -1,0 +1,4 @@
+/home/xiaoyu/EGA/offline_test/build/CMakeFiles/offline_auto_aim_core.dir
+/home/xiaoyu/EGA/offline_test/build/CMakeFiles/auto_aim_offline.dir
+/home/xiaoyu/EGA/offline_test/build/CMakeFiles/edit_cache.dir
+/home/xiaoyu/EGA/offline_test/build/CMakeFiles/rebuild_cache.dir

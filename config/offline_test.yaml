@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "random_seed": 2026,
+  "data": {
+    "mode": "generated",
+    "case_config": "config/cases/spinning_target.yaml",
+    "dataset_root": "data/cases",
+    "dataset_path": "data/cases/spinning_target"
+  },
+  "runner": {
+    "backend": "mock",
+    "cpp_executable": "build/auto_aim_offline",
+    "mock": {
+      "warmup_frames": 5,
+      "state_noise_std": 0.004,
+      "aim_noise_std": 0.008,
+      "fire_interval_frames": 12,
+      "muzzle_delay_s": 0.03
+    }
+  },
+  "tested_program": {
+    "auto_aim_config": "../2026_EGAIM/configs/demo.yaml",
+    "enemy_color": "blue"
+  },
+  "camera": {
+    "source_auto_aim_config": "../2026_EGAIM/configs/demo.yaml",
+    "image_width": 1440,
+    "image_height": 1080,
+    "camera_matrix": [
+      [1818.3669452465165, 0.0, 751.062265747035],
+      [0.0, 1822.494494078506, 530.4367155611213],
+      [0.0, 0.0, 1.0]
+    ],
+    "distortion_coefficients": [-0.07794462659956886, 0.1544782603148689, -0.0025714394278524674, 0.0008301631130127363, 0.0],
+    "R_gimbal2imubody": [-1.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0],
+    "R_camera2gimbal": [-0.008319576004695461, 0.010498791137270739, 0.9999102759946804, -0.9996075613864775, -0.026835747568381807, -0.008035289131414894, 0.026748978935305992, -0.9995847227909708, 0.010717933047771133],
+    "t_camera2gimbal": [0.09496930183353451, 0.09500629029800668, 0.05098706629175661]
+  },
+  "armor_geometry": {
+    "small": {"width": 0.135, "height": 0.056},
+    "big": {"width": 0.230, "height": 0.056}
+  },
+  "simulation": {
+    "gimbal_model": "ideal_previous_command",
+    "ballistic_model": "independent_rk4_configured_physics",
+    "ballistics": {
+      "muzzle_position_source": "2026_EGAIM Aimer/Trajectory implicit gimbal origin",
+      "muzzle_position": [0.0, 0.0, 0.0],
+      "gravity": 9.80665,
+      "drag_coefficient": 0.0,
+      "wind_velocity": [0.0, 0.0, 0.0],
+      "integration_dt_s": 0.002,
+      "max_flight_time_s": 2.0
+    }
+  },
+  "evaluation": {
+    "warmup_frames": 20
+  },
+  "output": {
+    "root": "output",
+    "write_svg": true
+  }
+}

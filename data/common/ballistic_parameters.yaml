@@ -1,0 +1,12 @@
+{
+  "gravity": 9.80665,
+  "drag_coefficient": 0.0,
+  "wind_velocity": [0.0, 0.0, 0.0],
+  "muzzle_position_source": "2026_EGAIM Aimer/Trajectory implicit gimbal origin",
+  "muzzle_position": [0.0, 0.0, 0.0],
+  "integration_dt_s": 0.002,
+  "max_flight_time_s": 2.0,
+  "default_bullet_speed": 27.0,
+  "muzzle_delay_s": 0.03,
+  "model": "independent_rk4_configured_physics"
+}
