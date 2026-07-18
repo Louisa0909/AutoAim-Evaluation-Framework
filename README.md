@@ -2,6 +2,7 @@
 # AutoAim-Offline-Evaluation
 
 这是一个“Python 测评层 + C++ 被测算法”的离线 Pipeline。Python 负责生成/读取数据、接口校验、批量编排、误差计算、命中判定和报告；C++ runner 调用现有 `Solver → Tracker → Aimer → Shooter`。
+
 An offline evaluation framework for vision-based robotic auto-aim systems.
 This project aims to build a data-driven analysis pipeline for identifying error sources in auto-aim systems, including perception, tracking, prediction and system latency.
 
