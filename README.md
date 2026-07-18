@@ -8,6 +8,8 @@ This project aims to build a data-driven analysis pipeline for identifying error
 
 当前第一版支持静止、匀速和小陀螺三个合成场景。默认使用确定性的 `mock` backend，因此在没有 OpenCV、Eigen、OpenVINO、CMake 的电脑上也能验证整个测评系统。`mock` 现在也只读取二维观测，用粗糙针孔模型产生占位输出；它不读取真值，其指标不代表真实算法能力。
 
+![Uploading image.png…]()
+
 ## 快速运行
 
 在 `D:\lab\EGA` 下执行：
