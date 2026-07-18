@@ -1,5 +1,5 @@
 # AutoAim-Offline-Evaluation
-# EGA 自瞄离线测评系统
+# RoboMaster 自瞄离线测评与误差分析系统
 
 An offline evaluation framework for vision-based robotic auto-aim systems.
 This project aims to build a data-driven analysis pipeline for identifying error sources in auto-aim systems, including perception, tracking, prediction and system latency.
