@@ -52,7 +52,7 @@ offline_test/
 ├── output/run_*/           # 每次独立运行的结果
 ├── py/offline_eval/        # Python生成、评价、命中和报告
 ├── tests/                  # Python单元测试
-├── visual/                 # 多次运行比较
+├── visual_analyse/         # 误差分析与可视化
 ├── CMakeLists.txt
 └── run_pipeline.py
 ```
