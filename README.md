@@ -1,6 +1,9 @@
 # EGA 自瞄离线测评系统
+# AutoAim-Offline-Evaluation
 
 这是一个“Python 测评层 + C++ 被测算法”的离线 Pipeline。Python 负责生成/读取数据、接口校验、批量编排、误差计算、命中判定和报告；C++ runner 调用现有 `Solver → Tracker → Aimer → Shooter`。
+An offline evaluation framework for vision-based robotic auto-aim systems.
+This project aims to build a data-driven analysis pipeline for identifying error sources in auto-aim systems, including perception, tracking, prediction and system latency.
 
 当前第一版支持静止、匀速和小陀螺三个合成场景。默认使用确定性的 `mock` backend，因此在没有 OpenCV、Eigen、OpenVINO、CMake 的电脑上也能验证整个测评系统。`mock` 现在也只读取二维观测，用粗糙针孔模型产生占位输出；它不读取真值，其指标不代表真实算法能力。
 
