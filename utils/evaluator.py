@@ -23,10 +23,24 @@ def _metric(values: list[float]) -> dict[str, Any]:
     }
 
 
+def _vector_metric(rows: list[dict[str, Any]], error_keys: tuple[str, ...], norm_key: str) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for axis, key in zip(("x", "y", "z"), error_keys):
+        values = [float(row[key]) for row in rows if row.get(key) is not None]
+        result[f"{axis}_bias"] = sum(values) / len(values) if values else None
+        result[f"{axis}_rmse"] = rmse(values)
+    norms = [float(row[norm_key]) for row in rows if row.get(norm_key) is not None]
+    result["position_rmse"] = rmse(norms)
+    result["position_p95"] = percentile(norms, 0.95)
+    return result
+
+
 def evaluate(dataset_dir: Path, run_dir: Path, config: dict[str, Any]) -> dict[str, Any]:
     target_rows = read_jsonl(dataset_dir / "ground_truth" / "target_states.jsonl")
     armor_rows = read_jsonl(dataset_dir / "ground_truth" / "armor_states.jsonl")
     frames = read_jsonl(dataset_dir / "frames.jsonl")
+    observations = read_jsonl(dataset_dir / "observations.jsonl")
+    ideal_observations = read_jsonl(dataset_dir / "ground_truth" / "ideal_observations.jsonl")
     frames_by_id = {int(frame["frame_id"]): frame for frame in frames}
     outputs = read_jsonl(run_dir / "algorithm_output.jsonl")
     solver_outputs = read_jsonl(run_dir / "solver_output.jsonl")
@@ -45,6 +59,9 @@ def evaluate(dataset_dir: Path, run_dir: Path, config: dict[str, Any]) -> dict[s
     muzzle_position = [float(v) for v in physics.get("muzzle_position", [0.0, 0.0, 0.0])]
 
     frame_errors: list[dict[str, Any]] = []
+    tracker_comparison: list[dict[str, Any]] = []
+    aimer_comparison: list[dict[str, Any]] = []
+    command_comparison: list[dict[str, Any]] = []
     position_errors: list[float] = []
     velocity_errors: list[float] = []
     yaw_errors: list[float] = []
@@ -98,6 +115,29 @@ def evaluate(dataset_dir: Path, run_dir: Path, config: dict[str, Any]) -> dict[s
             velocity_errors.append(velocity_error)
             yaw_errors.append(yaw_error)
             yaw_rate_errors.append(yaw_rate_error)
+            velocity_error_components = [
+                float(state_vector[1]) - float(truth["velocity"][0]),
+                float(state_vector[3]) - float(truth["velocity"][1]),
+                float(state_vector[5]) - float(truth["velocity"][2]),
+            ]
+            tracker_comparison.append({
+                "frame_id": frame_id, "source_timestamp_ns": timestamp_ns,
+                "reference_timestamp_ns": timestamp_ns, "layer": "tracker",
+                "object_type": "target_center", "target_id": target_id,
+                "estimate_x": state_vector[0], "estimate_y": state_vector[2], "estimate_z": state_vector[4],
+                "truth_x": truth["position"][0], "truth_y": truth["position"][1], "truth_z": truth["position"][2],
+                "error_x": ex, "error_y": ey, "error_z": ez, "position_error": position_error,
+                "estimate_vx": state_vector[1], "estimate_vy": state_vector[3], "estimate_vz": state_vector[5],
+                "truth_vx": truth["velocity"][0], "truth_vy": truth["velocity"][1], "truth_vz": truth["velocity"][2],
+                "error_vx": velocity_error_components[0], "error_vy": velocity_error_components[1], "error_vz": velocity_error_components[2],
+                "velocity_error": velocity_error,
+                "estimate_yaw": state_vector[6], "truth_yaw": truth["yaw"], "error_yaw": yaw_error,
+                "estimate_yaw_rate": state_vector[7], "truth_yaw_rate": truth["yaw_rate"], "error_yaw_rate": yaw_rate_error,
+                "estimate_radius": state_vector[8], "truth_radius": truth.get("radius"),
+                "estimate_radius_delta": state_vector[9], "truth_radius_delta": truth.get("radius_delta"),
+                "estimate_height_delta": state_vector[10], "truth_height_delta": truth.get("height_delta"),
+                "tracker_state": state, "valid": True,
+            })
         aimer = output.get("aimer", {})
         if aimer.get("valid") and aimer.get("aim_xyza") is not None and aimer.get("impact_timestamp_ns") is not None:
             # Tracker/Aimer armor indices are initialized from the first observation;
@@ -141,6 +181,29 @@ def evaluate(dataset_dir: Path, run_dir: Path, config: dict[str, Any]) -> dict[s
                     "line_of_sight_pitch_difference": los_pitch_difference,
                     "ideal_ballistic_pitch": ideal_ballistic_pitch,
                     "ballistic_pitch_error": ballistic_pitch_error,
+                })
+                aim_xyz = [float(v) for v in aimer["aim_xyza"][:3]]
+                truth_xyz = [float(v) for v in armor_truth["position"]]
+                aim_component_error = [aim_xyz[i] - truth_xyz[i] for i in range(3)]
+                aimer_comparison.append({
+                    "frame_id": frame_id, "source_timestamp_ns": timestamp_ns,
+                    "reference_timestamp_ns": impact_timestamp, "layer": "aimer",
+                    "object_type": "future_armor", "target_id": aimer_target_id,
+                    "armor_id": armor_truth["armor_id"], "aimer_internal_armor_id": aimer.get("armor_id"),
+                    "estimate_x": aim_xyz[0], "estimate_y": aim_xyz[1], "estimate_z": aim_xyz[2],
+                    "truth_x": truth_xyz[0], "truth_y": truth_xyz[1], "truth_z": truth_xyz[2],
+                    "error_x": aim_component_error[0], "error_y": aim_component_error[1],
+                    "error_z": aim_component_error[2], "position_error": aim_error, "valid": True,
+                })
+                command_comparison.append({
+                    "frame_id": frame_id, "source_timestamp_ns": timestamp_ns,
+                    "reference_timestamp_ns": impact_timestamp, "layer": "command",
+                    "object_type": "future_armor", "target_id": aimer_target_id,
+                    "armor_id": armor_truth["armor_id"],
+                    "estimate_yaw": output["command"]["yaw"], "truth_yaw": ideal_yaw, "error_yaw": yaw_error,
+                    "estimate_pitch": output["command"]["pitch"], "truth_pitch": ideal_ballistic_pitch,
+                    "error_pitch": ballistic_pitch_error, "line_of_sight_pitch": ideal_pitch,
+                    "shoot": output["command"].get("shoot", False), "valid": ideal_ballistic_pitch is not None,
                 })
                 if frame_id >= warmup_frames:
                     aim_errors.append(aim_error)
@@ -193,6 +256,7 @@ def evaluate(dataset_dir: Path, run_dir: Path, config: dict[str, Any]) -> dict[s
     write_jsonl(run_dir / "shots.jsonl", shots)
 
     solver_errors: list[dict[str, Any]] = []
+    solver_comparison: list[dict[str, Any]] = []
     solver_position_errors: list[float] = []
     solver_yaw_errors: list[float] = []
     for output in solver_outputs:
@@ -212,9 +276,52 @@ def evaluate(dataset_dir: Path, run_dir: Path, config: dict[str, Any]) -> dict[s
                 "position_error": position_error, "yaw_error": yaw_error,
             }
         )
+        solver_comparison.append({
+            "frame_id": output["frame_id"], "source_timestamp_ns": output["timestamp_ns"],
+            "reference_timestamp_ns": output["timestamp_ns"], "layer": "solver",
+            "object_type": "current_armor", "observation_id": output["observation_id"],
+            "target_id": output["target_hint_id"], "armor_id": output["armor_hint_id"],
+            "estimate_x": output["position"][0], "estimate_y": output["position"][1], "estimate_z": output["position"][2],
+            "truth_x": truth["position"][0], "truth_y": truth["position"][1], "truth_z": truth["position"][2],
+            "error_x": error[0], "error_y": error[1], "error_z": error[2], "position_error": position_error,
+            "estimate_yaw": output["yaw"], "truth_yaw": truth["yaw"], "error_yaw": yaw_error, "valid": True,
+        })
+
+    observation_comparison: list[dict[str, Any]] = []
+    noisy_by_key = {
+        (int(frame["frame_id"]), int(armor["target_hint_id"]), int(armor["armor_hint_id"])): armor
+        for frame in observations for armor in frame.get("armors", [])
+    }
+    for frame in ideal_observations:
+        for ideal in frame.get("armors", []):
+            key = (int(frame["frame_id"]), int(ideal["target_id"]), int(ideal["armor_id"]))
+            observed = noisy_by_key.get(key)
+            row = {
+                "frame_id": frame["frame_id"], "source_timestamp_ns": frame["timestamp_ns"],
+                "reference_timestamp_ns": frame["timestamp_ns"], "layer": "observation",
+                "object_type": "armor_pixels", "target_id": ideal["target_id"], "armor_id": ideal["armor_id"],
+                "detected": observed is not None, "valid": observed is not None,
+            }
+            if observed is not None:
+                ideal_corners, measured_corners = ideal["corners_px"], observed["corners_px"]
+                du = [float(measured_corners[i][0]) - float(ideal_corners[i][0]) for i in range(4)]
+                dv = [float(measured_corners[i][1]) - float(ideal_corners[i][1]) for i in range(4)]
+                ib, mb = ideal["bbox_xywh"], observed["bbox_xywh"]
+                row.update({
+                    "center_error_u": sum(du) / 4, "center_error_v": sum(dv) / 4,
+                    "corner_rmse_px": math.sqrt(sum(v * v for v in du + dv) / 8),
+                    "width_error_px": float(mb[2]) - float(ib[2]), "height_error_px": float(mb[3]) - float(ib[3]),
+                })
+            observation_comparison.append(row)
 
     write_csv(run_dir / "frame_errors.csv", ["frame_id", "timestamp_ns", "tracker_state", "tracker_valid", "error_x", "error_y", "error_z", "position_error", "velocity_error", "yaw_error", "yaw_rate_error", "aimer_internal_armor_id", "matched_gt_armor_id", "aim_point_error", "command_yaw_error", "line_of_sight_pitch_difference", "ideal_ballistic_pitch", "ballistic_pitch_error"], frame_errors)
     write_csv(run_dir / "solver_errors.csv", ["frame_id", "timestamp_ns", "observation_id", "target_id", "armor_id", "error_x", "error_y", "error_z", "position_error", "yaw_error"], solver_errors)
+    comparison_common = ["frame_id", "source_timestamp_ns", "reference_timestamp_ns", "layer", "object_type", "target_id"]
+    write_csv(run_dir / "observation_comparison.csv", comparison_common + ["armor_id", "detected", "center_error_u", "center_error_v", "corner_rmse_px", "width_error_px", "height_error_px", "valid"], observation_comparison)
+    write_csv(run_dir / "solver_comparison.csv", comparison_common + ["observation_id", "armor_id", "estimate_x", "estimate_y", "estimate_z", "truth_x", "truth_y", "truth_z", "error_x", "error_y", "error_z", "position_error", "estimate_yaw", "truth_yaw", "error_yaw", "valid"], solver_comparison)
+    write_csv(run_dir / "tracker_comparison.csv", comparison_common + ["estimate_x", "estimate_y", "estimate_z", "truth_x", "truth_y", "truth_z", "error_x", "error_y", "error_z", "position_error", "estimate_vx", "estimate_vy", "estimate_vz", "truth_vx", "truth_vy", "truth_vz", "error_vx", "error_vy", "error_vz", "velocity_error", "estimate_yaw", "truth_yaw", "error_yaw", "estimate_yaw_rate", "truth_yaw_rate", "error_yaw_rate", "estimate_radius", "truth_radius", "estimate_radius_delta", "truth_radius_delta", "estimate_height_delta", "truth_height_delta", "tracker_state", "valid"], tracker_comparison)
+    write_csv(run_dir / "aimer_comparison.csv", comparison_common + ["armor_id", "aimer_internal_armor_id", "estimate_x", "estimate_y", "estimate_z", "truth_x", "truth_y", "truth_z", "error_x", "error_y", "error_z", "position_error", "valid"], aimer_comparison)
+    write_csv(run_dir / "command_comparison.csv", comparison_common + ["armor_id", "estimate_yaw", "truth_yaw", "error_yaw", "estimate_pitch", "truth_pitch", "error_pitch", "line_of_sight_pitch", "shoot", "valid"], command_comparison)
 
     evaluable_shots = [shot for shot in shots if shot.get("physical_evaluation_valid", False)]
     hits = [shot for shot in evaluable_shots if shot.get("hit")]
@@ -224,14 +331,16 @@ def evaluate(dataset_dir: Path, run_dir: Path, config: dict[str, Any]) -> dict[s
         "schema_version": SCHEMA_VERSION,
         "backend": outputs[0].get("backend", "unknown") if outputs else "unknown",
         "frames": {"total": len(outputs), "tracking": valid_tracking, "tracking_ratio": valid_tracking / len(outputs) if outputs else None},
-        "solver": {"position": _metric(solver_position_errors), "yaw": _metric(solver_yaw_errors)},
+        "solver": {"position": _metric(solver_position_errors), "position_components": _vector_metric(solver_comparison, ("error_x", "error_y", "error_z"), "position_error"), "yaw": _metric(solver_yaw_errors)},
         "tracker": {
             "position": _metric(position_errors), "velocity": _metric(velocity_errors),
+            "position_components": _vector_metric(tracker_comparison, ("error_x", "error_y", "error_z"), "position_error"),
             "yaw": _metric(yaw_errors), "yaw_rate": _metric(yaw_rate_errors),
             "convergence_time_s": (first_tracking_timestamp - first_timestamp) / 1e9 if first_tracking_timestamp is not None else None,
         },
         "aimer": {
             "aim_point": _metric(aim_errors),
+            "position_components": _vector_metric(aimer_comparison, ("error_x", "error_y", "error_z"), "position_error"),
             "command_yaw": _metric(yaw_command_errors),
             "line_of_sight_pitch_difference": _metric(los_pitch_differences),
             "ballistic_pitch_error": _metric(ballistic_pitch_errors),

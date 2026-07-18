@@ -127,6 +127,7 @@ try {
     const auto & q = frame["imu_q_wxyz"];
     solver.set_R_gimbal2world(Eigen::Quaterniond{
       q[0].get<double>(), q[1].get<double>(), q[2].get<double>(), q[3].get<double>()});
+    const auto start = std::chrono::steady_clock::now();
     std::list<auto_aim::Armor> armors;
     const auto observation_it = observations.find(frame_key(frame_id));
     if (observation_it != observations.end()) {
@@ -134,22 +135,25 @@ try {
         if (!observation.value("valid", true)) continue;
         // Consume the recorded observation exactly as supplied. Ground Truth is
         // deliberately unavailable to this executable.
-        auto armor = make_armor(observation, image_width, image_height);
-        auto solver_copy = armor;
-        solver.solve(solver_copy);
+        auto solved_armor = make_armor(observation, image_width, image_height);
+        solver.solve(solved_armor);
+        const bool solver_valid =
+          solved_armor.xyz_in_world.allFinite() && solved_armor.ypr_in_world.allFinite();
         write_jsonl_row(
           solver_stream,
           {{"frame_id", frame_id}, {"timestamp_ns", timestamp_ns},
            {"observation_id", observation["observation_id"]},
            {"target_hint_id", observation["target_hint_id"]},
            {"armor_hint_id", observation["armor_hint_id"]},
-           {"position", {solver_copy.xyz_in_world[0], solver_copy.xyz_in_world[1], solver_copy.xyz_in_world[2]}},
-           {"yaw", solver_copy.ypr_in_world[0]}, {"valid", solver_copy.xyz_in_world.allFinite()}});
-        armors.push_back(std::move(armor));
+           {"position", {solved_armor.xyz_in_world[0], solved_armor.xyz_in_world[1], solved_armor.xyz_in_world[2]}},
+           {"yaw", solved_armor.ypr_in_world[0]}, {"valid", solver_valid}});
+        // Tracker must consume the exact state produced by Solver.  Passing the
+        // pre-solve Armor here disconnects the pipeline and leaves its world
+        // position/orientation unavailable to Target initialization and update.
+        if (solver_valid) armors.push_back(std::move(solved_armor));
       }
     }
 
-    const auto start = std::chrono::steady_clock::now();
     auto targets = tracker.track(armors, timestamp);
     const auto after_tracker = std::chrono::steady_clock::now();
     auto command = aimer.aim(targets, timestamp, frame["bullet_speed"].get<double>(), io::both_shoot, false);

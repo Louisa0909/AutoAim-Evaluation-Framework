@@ -185,6 +185,7 @@ def generate_dataset(config: dict[str, Any], project_root: Path) -> Path:
     targets: list[dict[str, Any]] = []
     armors: list[dict[str, Any]] = []
     observations: list[dict[str, Any]] = []
+    ideal_observations: list[dict[str, Any]] = []
     for frame_id in range(frame_count):
         timestamp_ns = start_ns + frame_id * step_ns
         t = (timestamp_ns - start_ns) / 1_000_000_000.0
@@ -211,11 +212,24 @@ def generate_dataset(config: dict[str, Any], project_root: Path) -> Path:
         targets.append(target_row)
         armors.extend(armor_rows)
         observed: list[dict[str, Any]] = []
+        ideal_observed: list[dict[str, Any]] = []
         for armor in armor_rows:
-            if not armor["visible"] or rng.random() < float(noise.get("drop_probability", 0.0)):
+            if not armor["visible"]:
                 continue
             points = _project_armor(armor, camera, geometry, imu_q_wxyz)
             if points is None:
+                continue
+            ideal_points = [[float(x), float(y)] for x, y in points]
+            ideal_observed.append(
+                {
+                    "target_id": target_id,
+                    "armor_id": armor["armor_id"],
+                    "corners_px": ideal_points,
+                    "bbox_xywh": _bbox(ideal_points),
+                    "valid": True,
+                }
+            )
+            if rng.random() < float(noise.get("drop_probability", 0.0)):
                 continue
             pixel_std = float(noise.get("pixel_noise_std", 0.0))
             if pixel_std > 0.0:
@@ -237,6 +251,7 @@ def generate_dataset(config: dict[str, Any], project_root: Path) -> Path:
                 }
             )
         observations.append({"frame_id": frame_id, "timestamp_ns": timestamp_ns, "armors": observed})
+        ideal_observations.append({"frame_id": frame_id, "timestamp_ns": timestamp_ns, "armors": ideal_observed})
 
     metadata = {
         "schema_version": SCHEMA_VERSION,
@@ -256,6 +271,9 @@ def generate_dataset(config: dict[str, Any], project_root: Path) -> Path:
     dump_json(dataset_dir / "metadata.yaml", metadata)
     write_jsonl(dataset_dir / "frames.jsonl", frames)
     write_jsonl(dataset_dir / "observations.jsonl", observations)
+    # Kept below ground_truth so the algorithm input preparation cannot expose
+    # ideal pixels to either backend.  Evaluator uses it only after inference.
+    write_jsonl(gt_dir / "ideal_observations.jsonl", ideal_observations)
     write_jsonl(gt_dir / "target_states.jsonl", targets)
     write_jsonl(gt_dir / "armor_states.jsonl", armors)
     write_jsonl(gt_dir / "gimbal_states.jsonl", [])

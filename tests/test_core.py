@@ -47,6 +47,15 @@ class GroundTruthIsolationTests(unittest.TestCase):
         self.assertNotIn("projected_observation", source)
         self.assertNotIn("armor_truth", source)
 
+    def test_cpp_tracker_consumes_solver_output(self):
+        source = (ROOT / "apps" / "auto_aim_offline.cpp").read_text(encoding="utf-8")
+        solve_at = source.index("solver.solve(solved_armor)")
+        enqueue_at = source.index("armors.push_back(std::move(solved_armor))")
+        track_at = source.index("tracker.track(armors, timestamp)")
+        self.assertLess(solve_at, enqueue_at)
+        self.assertLess(enqueue_at, track_at)
+        self.assertNotIn("armors.push_back(std::move(armor))", source)
+
     def test_mock_runner_has_no_ground_truth_access(self):
         source = (ROOT / "utils" / "mock_runner.py").read_text(encoding="utf-8")
         self.assertNotIn("ground_truth", source.lower())
@@ -104,6 +113,27 @@ class BallisticEvaluationTests(unittest.TestCase):
         self.assertTrue(result["hit"])
         self.assertTrue(result["evaluation_valid"])
         self.assertLessEqual(result["miss_distance"], 1e-9)
+
+    def test_hit_checker_interpolates_plane_crossing_time(self):
+        physics = dict(self.physics)
+        physics["integration_dt_s"] = 0.3
+        rows = [
+            {"timestamp_ns": timestamp, "target_id": 1, "armor_id": 0,
+             "position": [5.0 + timestamp / 1e9, 0.0, 0.0], "yaw": 0.0,
+             "armor_type": "large_test"}
+            for timestamp in (0, 1_000_000_000, 2_000_000_000)
+        ]
+        result = simulate_physical_shot(
+            0.0, 0.0, 10.0, 0, 1, 0,
+            StateTimeline(rows, ("target_id", "armor_id")),
+            {"large_test": {"width": 10.0, "height": 10.0}}, physics,
+        )
+        # Bullet x=10t and moving plane x=5+t cross at t=5/9 s.  With a
+        # coarse 0.3 s integration step, returning 0.6 s would expose the old bug.
+        self.assertTrue(result["evaluation_valid"])
+        self.assertAlmostEqual(result["flight_time_s"], 5.0 / 9.0, places=6)
+        self.assertAlmostEqual(result["impact_timestamp_ns"] / 1e9, 5.0 / 9.0, places=6)
+        self.assertAlmostEqual(result["impact_position"][0], 50.0 / 9.0, places=6)
 
 
 class CameraModelTests(unittest.TestCase):
