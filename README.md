@@ -8,8 +8,6 @@ This project aims to build a data-driven analysis pipeline for identifying error
 
 当前第一版支持静止、匀速和小陀螺三个合成场景。默认使用确定性的 `mock` backend，因此在没有 OpenCV、Eigen、OpenVINO、CMake 的电脑上也能验证整个测评系统。`mock` 现在也只读取二维观测，用粗糙针孔模型产生占位输出；它不读取真值，其指标不代表真实算法能力。
 
-![image1](./docs/01_six_metrics_over_time.png)
-
 ## Why an offline test
 
 Developing robotic auto-aim systems is often an iterative process involving perception, tracking, prediction and ballistic compensation. However, without a reproducible offline evaluation pipeline, algorithm development largely depends on repeated on-robot testing and empirical parameter tuning, making it difficult to locate the true source of errors or objectively compare different algorithmic improvements.
@@ -54,6 +52,9 @@ This project was initiated to build a data-driven evaluation framework that enab
 🚧 Full perception pipeline
 
 🚧 Online data logging
+
+![image1](./docs/01_six_metrics_over_time.png)
+![image1](./docs/02_six_metrics_aligned_by_solver_input.png)
 
 ## Quick Start
 
