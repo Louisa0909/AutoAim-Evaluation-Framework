@@ -10,7 +10,7 @@ This project aims to build a data-driven analysis pipeline for identifying error
 
 ![image1](./docs/01_six_metrics_over_time.png)
 
-## 项目背景 Why an offline test
+## Why an offline test
 
 Developing robotic auto-aim systems is often an iterative process involving perception, tracking, prediction and ballistic compensation. However, without a reproducible offline evaluation pipeline, algorithm development largely depends on repeated on-robot testing and empirical parameter tuning, making it difficult to locate the true source of errors or objectively compare different algorithmic improvements.
 
@@ -20,7 +20,42 @@ This project was initiated to build a data-driven evaluation framework that enab
 
 本项目旨在构建一套数据驱动的离线评测框架，实现可复现实验、定量误差分析和系统化 Benchmark。其目标不仅是评价算法性能，更重要的是分析误差在整个自瞄链路中的传播过程，为后续算法优化和研究提供可靠依据。
 
-## 快速运行
+## Architecture
+
+```
+                Dataset
+                    │
+                    ▼
+         Observation Generator
+                    │
+                    ▼
+        Solver → Tracker → Aimer
+                    │
+                    ▼
+             Offline Evaluator
+                    │
+                    ▼
+          Error Analysis Report
+```
+## Current Progress
+
+✅ Synthetic dataset generation
+
+✅ Offline replay pipeline
+
+✅ Solver / Tracker / Aimer evaluation
+
+✅ Hit judgement
+
+✅ Error visualization
+
+🚧 Real match data integration
+
+🚧 Full perception pipeline
+
+🚧 Online data logging
+
+## Quick Start
 
 在 `D:\lab\EGA` 下执行：
 
